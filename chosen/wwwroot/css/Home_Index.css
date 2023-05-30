@@ -1,0 +1,23 @@
+﻿.tab-content-1 {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border: 10px solid #ccc;
+    border-radius: 5px;
+}
+
+    .tab-content-1 ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .tab-content-1 a {
+        display: block;
+        color: #333;
+        text-decoration: underline; /* 添加底線 */
+        margin-bottom: 5px;
+    }
+
+        .tab-content-1 a:hover {
+            color: #ff0000;
+            text-decoration: none; /* 移除底線 */
+        }
