@@ -1,0 +1,74 @@
+﻿@model ShowRaward
+
+@{
+    String dateTime = Model.CreateTime.ToShortDateString();
+}
+
+<div class="modal-header">
+    <h4 class="modal-title fw-bolder" id="showDetailLabel">資料細項</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+        <table class="table-specil">
+            <tbody>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Series)</th>
+                    <td>
+                        <input asp-for="Series" class="form-control" readonly />
+                    </td>                   
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Name)</th>
+                    <td>
+                        <input asp-for="Name" class="form-control" readonly/>
+                    </td>
+                </tr>
+              
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.AddProbability)</th>
+                    <td>
+                        <input asp-for="AddProbability" class="form-control" readonly />
+                    </td>
+                </tr>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.NowProbability)</th>
+                <td>
+                    <input asp-for="NowProbability" class="form-control" readonly />
+                </td>
+            </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.AllowStoreDay)</th>
+                    <td>
+                        <input asp-for="AllowStoreDay" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Fare)</th>
+                    <td>
+                        <input asp-for="Fare" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.OneDrawMoney)</th>
+                    <td>
+                        <input asp-for="OneDrawMoney" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.CreateTime)</th>
+                    <td>
+                    <input asp-for="@dateTime" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Introduction)</th>
+                    <td>
+                        <textarea readonly>@Html.DisplayFor(model => model.Introduction)</textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button id="closeData" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>

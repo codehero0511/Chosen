@@ -1,0 +1,239 @@
+﻿@model IEnumerable<FinalProject.Models.ShowRaward>
+
+<div class="table-header mb-2">
+    <h3 class="fw-bolder">
+        獎池資訊
+    </h3>
+</div>
+
+<div class="d-flex">
+    <a href="#" id="Create" class="btn btn-success text-white btn-sm mb-2 getRow" data-bs-toggle="modal" data-bs-target="#showDetail">新增獎池</a>
+</div>
+
+<div class="table-responsive">
+    <table id="mainTable"
+           class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="center">
+                    <label>
+                        <input type="checkbox" class="ace" />
+                        <span class="lbl"></span>
+                    </label>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Series)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+               
+                <th style="min-width:10px">Edit</th>
+                <th>Detail</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="center">
+                        <label>
+                            <input type="checkbox" class="ace" />
+                            <span class="lbl"></span>
+                        </label>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Series)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    
+                    <td style="min-width:80px">
+                        <a href="#" class="getRow" id="Edit@(@item.ShowRawardId)" data-bs-toggle="modal" data-bs-target="#showDetail"><i class="tf-icons bx bx-edit-alt"></i></a> |
+                        <a href="#" class="getRow" id="Details@(@item.ShowRawardId)" data-bs-toggle="modal" data-bs-target="#showDetail"><i class="tf-icons bx bx-book text-success"></i></a>|
+                        <a href="#" class="getRow" id="Delete@(@item.ShowRawardId)"><i class="tf-icons bx bx-trash text-danger"></i></a>
+                    </td>
+                    <td>
+                        <a asp-controller="ShowRawardItems" asp-action="Index" asp-route-id="@item.ShowRawardId"><i class="tf-icons bx bx-detail"></i></a>
+                    </td>
+                </tr>
+            }          
+        </tbody>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th>@Html.DisplayNameFor(model => model.Series)</th>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                
+                <th></th> 
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="showDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="modalContext">
+
+        </div>
+    </div>
+</div>
+
+@section Scripts 
+{
+  <script>
+        let webRoot;
+        //用 .getRow 作為通用的 AJAX 處理，利用表頭名稱做分辨
+        $(".getRow").bind("click", function () {
+            //這邊一定要先取消 #postData 的監聽事件，不然開啟彈跳視窗且沒有成功加入資料，會造成監聽事件重複執行
+            $(document).off("click", "#postData");
+            let getName;
+
+            //取得按鈕本身需要執行什麼
+            let nowId = $(this).attr("id").replace(/[a-z,A-Z]*/, function (e) {
+                getName = e;
+                return "";
+            });
+
+            //執行哪一個 AJAX
+            switch (getName) {
+                case "Create":
+                    webRoot = "@Url.Action("Create","ShowRawards")"
+                    CreateRawardLib();
+                    break;
+                case "Edit":
+                    webRoot = "@Url.Action("Edit","ShowRawards")"
+                    UpdataRawardLib(nowId);
+                    break;
+                case "Details":
+                    webRoot = "@Url.Action("Details","ShowRawards")"
+                    ShowDetailRawardLib(nowId);
+                    break;
+                case "Delete":
+                    webRoot = "@Url.Action("Delete","ShowRawards")"
+                    DeleteRawardLib(nowId);
+                    break;
+            }
+        });
+
+        function UpdataRawardLib(id) {          
+            $.ajax({
+                type: "GET",
+                url: `${webRoot}/${id}`
+            }).done(function (result) {
+                // AJAX 執行成功後，除了將返回結果寫回畫面以外，還要加入 #postData 表單的 AJAX 行為，這樣才能執行
+                // 這部分一定只能這麼做，因為 PARTIAL 模型只會在形成之後才能加入 #postData 的行為
+                $("#modalContext").html(result);
+
+                $(document).on('click', "#postData", function () {
+                    $.ajax({
+                        url: `${webRoot}/${id}`,
+                        method: 'POST',
+                        data: $('#postform').serialize(),
+                        success: function (response) {
+
+                            if (typeof (response) == "object") {
+                                location.reload();
+                            }else
+                            {
+                                $('#modalContext').html(response);
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log(xhr.statusText + ': ' + xhr.responseText);
+                        }
+                    });
+                });
+
+            }).fail(function (e) {
+                alert(e.responseText);
+            });
+        }
+
+        //顯示細節
+        function ShowDetailRawardLib(id) {
+            $.ajax({
+                type: "GET",
+                url: `${webRoot}/${id}`
+            }).done(function (result) {
+                // AJAX 執行成功後，除了將返回結果寫回畫面以外，還要加入 #postData 表單的 AJAX 行為，這樣才能執行
+                // 這部分一定只能這麼做，因為 PARTIAL 模型只會在形成之後才能加入 #postData 的行為
+                $("#modalContext").html(result);               
+            }).fail(function (e) {
+                alert(e.responseText);
+            });
+        }
+
+        // 刪除行為只需要跑出提示，不需要額外再出現內容
+        function DeleteRawardLib(id){
+            Swal.fire({
+                title: '您確定要刪除此筆資料?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d15b47',
+                cancelButtonColor: '#abbac3',
+                confirmButtonText: '確認'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: `${webRoot}/${id}`
+                    }).done(function (result) {
+                        Swal.fire(
+                            '刪除成功!',
+                            '',
+                            'success'
+                        ).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        })
+                    }).fail(function (e) {
+                        Swal.fire(
+                            '刪除失敗!',
+                            '獎池已建立細項，無法刪除!',
+                            'error'
+                        )
+                    });
+                }
+            })
+        }
+
+        function CreateRawardLib(){
+            $.ajax({
+                type: "GET",
+                url: `${webRoot}`
+            }).done(function (result) {
+
+                $("#modalContext").html(result);
+
+                $(document).on('click', "#postData", function () {
+                    $.ajax({
+                        url: `${webRoot}`,
+                        method: 'POST',
+                        data: $('#postform').serialize(),
+                        success: function (response) {
+
+                            if (typeof (response) == "object") {
+                                location.reload();
+                            }else
+                            {
+                                $('#modalContext').html(response);
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log(xhr.statusText + ': ' + xhr.responseText);
+                        }
+                    });
+                });
+
+            }).fail(function (e) {
+                alert(e.responseText);
+            });
+        }
+  </script>
+}
